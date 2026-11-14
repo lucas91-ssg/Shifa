@@ -1,0 +1,170 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SHIFA شفا — Health Copilot for Asia's Diabetes Belt</title>
+<link rel="icon" href="public/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#07100c">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Sora',system-ui,sans-serif}
+[dir=rtl] .i18n,[dir=rtl] input{font-family:'Noto Naskh Arabic','Sora',serif}
+[dir=rtl][data-l=ur] .i18n{font-family:'Noto Nastaliq Urdu',serif;line-height:2}
+.grad{background:linear-gradient(120deg,#059669,#34d399 55%,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+.glass{background:rgba(255,255,255,.045);border:1px solid rgba(52,211,153,.18);border-radius:1.25rem;backdrop-filter:blur(12px)}
+.btn{background:linear-gradient(120deg,#059669,#34d399);color:#04120b;font-weight:800;border-radius:.9rem;padding:.7rem .9rem;font-size:.82rem;width:100%}
+.btn.ghost{background:transparent;border:1px solid rgba(52,211,153,.3);color:#a7f3d0}
+.pill{font-size:.6rem;padding:.2rem .6rem;border-radius:99px;border:1px solid rgba(52,211,153,.3);color:#6ee7b7}
+.dot{width:12px;height:12px;border-radius:99px;display:inline-block;flex:0 0 auto}
+.langb{padding:.3rem .6rem;border-radius:99px;border:1px solid rgba(255,255,255,.15);font-size:.68rem;font-weight:700}
+.langb.on{background:linear-gradient(120deg,#059669,#34d399);color:#04120b;border-color:transparent}
+.meal{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border:1px solid rgba(255,255,255,.08);border-radius:.9rem;cursor:pointer}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+input,select{background:rgba(255,255,255,.05);border:1px solid rgba(52,211,153,.22);border-radius:.8rem;color:#e2e8f0;padding:.55rem .7rem;font-size:.82rem;width:100%}
+label{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#7da99a}
+.hbar{width:14px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#34d399,#059669);display:inline-block;vertical-align:bottom}
+</style></head>
+<body class="bg-[#07100c] text-slate-100 min-h-screen">
+<header class="max-w-xl mx-auto flex items-center gap-3 px-4 pt-5">
+ <img src="public/icon.svg" class="w-9 h-9" alt="SHIFA">
+ <div><div class="font-extrabold text-lg leading-none grad">SHIFA <span class="text-[#d4af37]">شفا</span></div>
+ <div class="text-[10px] text-slate-400 i18n" data-k="tag">Health copilot · Asia's diabetes belt</div></div>
+ <div class="ml-auto flex gap-1" id="langBox"><button class="langb on" data-l="en">EN</button><button class="langb" data-l="ur">اردو</button><button class="langb" data-l="ar">ع</button></div>
+</header>
+<main class="max-w-xl mx-auto px-4 pb-24 mt-3 space-y-3">
+ <div class="flex flex-wrap gap-1"><span class="pill i18n" data-k="p1">🩸 Education, not diagnosis</span><span class="pill i18n" data-k="p2">🔒 On-device</span><span class="pill i18n" data-k="p3">💬 WhatsApp-native</span><span class="pill i18n" data-k="p4">🎙 Voice-first</span></div>
+
+ <section class="glass p-4">
+  <div class="flex justify-between text-xs mb-1"><span class="i18n" data-k="today">Today's plate</span><span><b id="pts">0</b>/6 <span class="i18n" data-k="pts">pts</span></span></div>
+  <div class="bar"><div id="barFill" style="width:0%;height:100%"></div></div>
+  <div class="flex items-center gap-2 mt-2"><div id="insight" class="text-xs flex-1 text-slate-300"></div><button id="speakBtn" class="btn ghost" style="width:auto;padding:.4rem .6rem">🔊</button></div>
+  <ul id="logged" class="text-xs mt-2 space-y-1"></ul>
+ </section>
+
+ <section class="glass p-4">
+  <div class="flex gap-2"><input id="q" placeholder="Search or say: biryani, roti…" class="flex-1"><button id="micBtn" class="btn ghost" style="width:auto;padding:.5rem .7rem">🎤</button></div>
+  <div id="list" class="space-y-1 max-h-56 overflow-auto mt-2"></div>
+ </section>
+
+ <section class="glass p-4"><h3 class="font-bold text-sm mb-2 i18n" data-k="scr">🩺 Risk screener (2 min, non-diagnostic)</h3>
+  <div class="grid grid-cols-2 gap-2">
+   <select id="sAge"><option value="0">&lt;35 y</option><option value="2">35-44 y</option><option value="3">45-54 y</option><option value="4">55+ y</option></select>
+   <select id="sFam"><option value="0">No family diabetes</option><option value="3">Family diabetes</option></select>
+   <select id="sAct"><option value="0">Active 30min/day</option><option value="2">Mostly sedentary</option></select>
+   <select id="sWai"><option value="0">Waist &lt;90cm</option><option value="2">90-99cm</option><option value="3">100cm+</option></select>
+  </div>
+  <button id="scrBtn" class="btn mt-2 i18n" data-k="scrGo">Compute my band</button>
+  <div id="scrOut" class="text-xs mt-2 text-slate-300"></div>
+ </section>
+
+ <section class="glass p-4"><h3 class="font-bold text-sm mb-2 i18n" data-k="vit">📈 Vitals log (on-device)</h3>
+  <div class="grid grid-cols-4 gap-2">
+   <div><label>Glucose mg/dL</label><input id="vG" type="number" placeholder="110"></div>
+   <div><label>Sys</label><input id="vS" type="number" placeholder="120"></div>
+   <div><label>Dia</label><input id="vD" type="number" placeholder="80"></div>
+   <div><label>Weight kg</label><input id="vW" type="number" placeholder="72"></div>
+  </div>
+  <button id="vitBtn" class="btn ghost mt-2 i18n" data-k="vitAdd">Log vitals</button>
+  <div id="chart" class="mt-3 h-20 flex items-end gap-1"></div>
+  <div id="vitLast" class="text-[10px] text-slate-400 mt-1"></div>
+ </section>
+
+ <section class="glass p-4"><h3 class="font-bold text-sm mb-2 i18n" data-k="med">💊 Medication reminders</h3>
+  <div class="grid grid-cols-3 gap-2"><input id="mN" class="col-span-2" placeholder="Metformin 500mg"><input id="mT" type="time" value="20:00"></div>
+  <div class="grid grid-cols-2 gap-2 mt-2"><button id="medBtn" class="btn ghost i18n" data-k="medAdd">Add reminder</button><button id="permBtn" class="btn ghost i18n" data-k="medPerm">Enable notifications</button></div>
+  <ul id="medList" class="text-xs mt-2 space-y-1"></ul>
+ </section>
+
+ <section class="glass p-4"><h3 class="font-bold text-sm mb-2 i18n" data-k="ask">🤖 Ask SHIFA (education only)</h3>
+  <div class="flex gap-2"><input id="aQ" placeholder="e.g. can I eat dates at iftar?" class="flex-1"><button id="aBtn" class="btn i18n" style="width:auto;padding:.5rem .9rem" data-k="askBtn">Ask</button></div>
+  <div id="aOut" class="text-xs mt-2 text-slate-300 whitespace-pre-wrap"></div>
+ </section>
+
+ <section class="glass p-4"><h3 class="font-bold text-sm mb-2 i18n" data-k="ref">🏥 Find care near me</h3>
+  <div class="grid grid-cols-2 gap-2"><button id="refC" class="btn ghost">🩺 Diabetes clinic</button><button id="refP" class="btn ghost">💊 Pharmacy</button></div>
+ </section>
+
+ <button id="waBtn" class="btn i18n" data-k="wa">💬 Share today's summary on WhatsApp</button>
+ <p class="text-[10px] text-slate-500 leading-relaxed i18n" data-k="disc">SHIFA is an educational tool, not medical advice or a medical device. Bands and screens are population-level estimates; validate with your clinician. Red-flag symptoms → call your local emergency number now. © SHIFA 2026</p>
+</main>
+<script>
+var GEMINI_KEY=''; /* pegá tu key de Gemini acá; si queda vacía, SHIFA usa su KB local */
+var FOODS=[
+{n:'Whole wheat roti (1)',b:1,sw:'1 roti + extra sabzi, less rice'},{n:'Naan (1 large)',b:2,sw:'Half naan or 1 roti'},
+{n:'Chicken biryani (full plate)',b:2,sw:'Half plate + raita + salad'},{n:'Beef haleem (1 bowl)',b:2,sw:'Half bowl + salad'},
+{n:'Nihari (1 bowl, no naan)',b:1,sw:'Skim oil layer; add salad'},{n:'Dal chawal (1 plate)',b:1,sw:'More dal, less rice (2:1)'},
+{n:'Chana chaat (1 plate)',b:0,sw:'Great choice as is'},{n:'Grilled chicken tikka (6 pc)',b:0,sw:'Great choice as is'},
+{n:'Beef kabsa (full plate)',b:2,sw:'Half rice, double salad'},{n:'Mandi chicken (full plate)',b:2,sw:'Half rice portion'},
+{n:'Shawarma (1 wrap)',b:2,sw:'Bowl version, no bread'},{n:'Hummus + veg sticks',b:0,sw:'Great choice as is'},
+{n:'Dates (3)',b:1,sw:'1-2 dates + nuts'},{n:'Chai with 2 tsp sugar',b:1,sw:'No-sugar chai or stevia'},
+{n:'Sweet lassi (1 glass)',b:2,sw:'Salted lassi or buttermilk'},{n:'Jalebi (2 pc)',b:2,sw:'Festive-only; walk 15 min after'},
+{n:'Samosa (1 fried)',b:2,sw:'Baked/air-fried version'},{n:'White rice (1 cup)',b:2,sw:'Half cup + dal 2:1'},
+{n:'Eggs (2)',b:0,sw:'Great choice as is'},{n:'Mango (1 cup)',b:2,sw:'Half cup + nuts, after meal'},
+{n:'Apple (1)',b:0,sw:'Great choice as is'},{n:'Banana (1 ripe)',b:1,sw:'Half + peanut butter'},
+{n:'Soft drink (330ml)',b:2,sw:'Water with lemon; better: none'},{n:'Nasi goreng (1 plate)',b:2,sw:'Half plate + egg + veg'},
+{n:'Roti canai (2 + curry)',b:2,sw:'1 canai + double curry veg'},{n:'Satay (5 skewers)',b:1,sw:'Skip the ketupat rice cake'}];
+var PTS=[1,2,3],COL=['#34d399','#fbbf24','#f87171'];
+var RED=/chest pain|breathless|can't breathe|bleeding|unconscious|faint|stroke|suicide|severe pain|درد سینہ|سانس|خونریزی|بے ہوش|ألم صدر|تنفس|نزيف|إغماء/;
+var KB=[[/sugar|glucos|diabet|شوگر|سكر/,'Diabetes management starts with what lands on your plate twice a day. Use the traffic light above: green = go, amber = half portion + protein/veg first, red = festive-only. Log your glucose in Vitals and share the weekly summary with your clinician. I never adjust medication — that is your doctor\'s job.'],
+[/roti|rice|naan|biryani|kabsa|روٹی|چاول|برياني/,'Rule of thumb for rice-and-bread cuisines: half the plate veg + protein, quarter starch (1 roti or half cup rice), quarter salad. Order of eating matters: veg/protein first, starch last — it blunts the spike.'],
+[/insulin|metformin|medic|دوا|انسولین|دواء/,'Take medicines exactly as prescribed, at the same times daily — the Reminders card above sends you a notification. Never stop or change a dose because of an app, a friend, or me. If side effects worry you, message your prescriber today.'],
+[/fast|ramadan|روزہ|رمضان/,'Fasting with diabetes is a medical decision, not a willpower one: ask your clinician BEFORE Ramadan about dose timing. If you fast: suhoor late with protein + whole grain, iftar starting with water + dates (1-3) + soup, and check glucose more often. Break the fast on red-flag symptoms — that is what the exemptions are for.'],
+[/water|thirst|پانی|ماء/,'Persistent thirst + frequent night urination are classic high-glucose signals: log a fasting glucose this week and book a screening. Water first, chai/soft drinks last.'],
+[/weight|walk|exercise|وزن/,'10-15 minutes of walking after your largest meal cuts the post-meal spike meaningfully — it is the cheapest medicine in this app. Pair with 2 strength sessions/week to keep muscle, which is your glucose sink.']];
+var L={en:{tag:'Health copilot · Asia\'s diabetes belt',p1:'🩸 Education, not diagnosis',p2:'🔒 On-device',p3:'💬 WhatsApp-native',p4:'🎙 Voice-first',today:'Today\'s plate',pts:'pts',scr:'🩺 Risk screener (2 min, non-diagnostic)',scrGo:'Compute my band',vit:'📈 Vitals log (on-device)',vitAdd:'Log vitals',med:'💊 Medication reminders',medAdd:'Add reminder',medPerm:'Enable notifications',ask:'🤖 Ask SHIFA (education only)',askBtn:'Ask',ref:'🏥 Find care near me',wa:'💬 Share today\'s summary on WhatsApp',disc:'SHIFA is an educational tool, not medical advice or a medical device. Bands and screens are population-level estimates; validate with your clinician. Red-flag symptoms → call your local emergency number now. © SHIFA 2026',ok:'Green day: steady energy, good swaps.',warn:'Amber day: one more high band breaks the budget.',over:'Red day: over budget. Walk 15 min after dinner; restart clean tomorrow.',search:'Search or say: biryani, roti…'},
+ur:{tag:'ہیلٹھ کوپائلٹ · ایشیا کا ذیابیطس بیلٹ',p1:'🩸 تعلیم، تشخیص نہیں',p2:'🔒 آپ کے آلے پر',p3:'💬 واٹس ایپ',p4:'🎙 آواز پہلے',today:'آج کی پلیٹ',pts:'پوائنٹس',scr:'🩺 رسک اسکرینر (2 منٹ، غیر تشخیصی)',scrGo:'میرا بینڈ نکالیں',vit:'📈 وائٹلز لاگ (آلے پر)',vitAdd:'وائٹلز محفوظ کریں',med:'💊 ادویات کی یاد دہانی',medAdd:'یاد دہانی شامل کریں',medPerm:'اطلاعات فعال کریں',ask:'🤖 شفاء سے پوچھیں (صرف تعلیم)',askBtn:'پوچھیں',ref:'🏥 قریبی کلینک یا فارمیسی',wa:'💬 آج کا خلاصہ واٹس ایپ پر',disc:'شفاء تعلیمی آلہ ہے، طبی مشورہ یا میڈیکل ڈیوائس نہیں۔ بینڈز عوامی اندازے ہیں؛ اپنے معالج سے تصدیق کریں۔ سنگین علامات → ابھی مقامی ایمرجنسی کال کریں۔ © شفاء 2026',ok:'سبز دن: مستحکم توانائی۔',warn:'عنبری دن: ایک اور ہائی بینڈ بجٹ توڑے گا۔',over:'سرخ دن: بجٹ سے زیادہ۔ رات کو 15 منٹ چلیں۔',search:'تلاش یا بولیں: بریانی، روٹی…'},
+ar:{tag:'طيار صحي · حزام السكري الآسيوي',p1:'🩸 تعليم لا تشخيص',p2:'🔒 على جهازك',p3:'💬 عبر واتساب',p4:'🎙 الصوت أولاً',today:'طبق اليوم',pts:'نقاط',scr:'🩺 فاحص الخطورة (دقيقتان، غير تشخيصي)',scrGo:'احسب فئتي',vit:'📈 سجل العلامات (على الجهاز)',vitAdd:'سجّل العلامات',med:'💊 تذكيرات الدواء',medAdd:'أضف تذكيراً',medPerm:'فعّل الإشعارات',ask:'🤖 اسأل شفاء (تعليم فقط)',askBtn:'اسأل',ref:'🏥 ابحث عن رعاية قريبة',wa:'💬 شارك ملخص اليوم على واتساب',disc:'شفاء أداة تعليمية وليست استشارة طبية ولا جهازاً طبياً. التقديرات سكانية؛ تحقق من طبيبك. أعراض خطيرة → اتصل بالطوارئ الآن. © شفاء 2026',ok:'يوم أخضر: طاقة مستقرة.',warn:'يوم كهرماني: صنف مرتفع آخر يتجاوز الميزانية.',over:'يوم أحمر: تجاوزت الميزانية. امشِ 15 دقيقة بعد العشاء.',search:'ابحث أو قل: برياني، خبز…'}};
+var lang=localStorage.getItem('shifa_lang')||'en';
+function J(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function S(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function applyLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==='en'?'ltr':'rtl';document.body.setAttribute('data-l',lang);
+ document.querySelectorAll('.i18n').forEach(function(e){if(L[lang][e.dataset.k])e.textContent=L[lang][e.dataset.k];});
+ document.getElementById('q').placeholder=L[lang].search;
+ document.querySelectorAll('.langb').forEach(function(b){b.classList.toggle('on',b.dataset.l===lang);});renderList('');render();}
+document.getElementById('langBox').addEventListener('click',function(e){var b=e.target.closest('.langb');if(!b)return;lang=b.dataset.l;S('shifa_lang',lang);applyLang();});
+function renderList(q){q=(q||'').toLowerCase();
+ document.getElementById('list').innerHTML=FOODS.filter(function(f){return !q||f.n.toLowerCase().indexOf(q)>=0;}).map(function(f){var i=FOODS.indexOf(f);
+ return '<div class="meal" data-i="'+i+'"><span class="dot" style="background:'+COL[f.b]+'"></span><span class="text-xs flex-1">'+f.n+'</span><span class="text-[10px] text-slate-400">'+PTS[f.b]+'pt</span></div>';}).join('')||'<div class="text-xs text-slate-500">—</div>';}
+document.getElementById('q').addEventListener('input',function(){renderList(this.value);});
+document.getElementById('list').addEventListener('click',function(e){var m=e.target.closest('.meal');if(!m)return;var f=FOODS[Number(m.dataset.i)];var a=J('shifa_log',[]);a.unshift({n:f.n,b:f.b,sw:f.sw,t:Date.now()});S('shifa_log',a);render();});
+document.getElementById('logged').addEventListener('click',function(e){var b=e.target.closest('.del');if(!b)return;var a=J('shifa_log',[]);a.splice(Number(b.dataset.i),1);S('shifa_log',a);render();});
+function render(){var a=J('shifa_log',[]);var pts=a.reduce(function(s,x){return s+PTS[x.b];},0);
+ document.getElementById('pts').textContent=pts;
+ var bf=document.getElementById('barFill');bf.style.width=Math.min(100,pts/6*100)+'%';
+ bf.style.background=pts>6?'linear-gradient(90deg,#dc2626,#f87171)':pts>4?'linear-gradient(90deg,#d97706,#fbbf24)':'linear-gradient(90deg,#059669,#34d399)';
+ document.getElementById('insight').textContent=pts>6?L[lang].over:pts>4?L[lang].warn:L[lang].ok;
+ document.getElementById('logged').innerHTML=a.map(function(x,i){return '<li class="flex flex-wrap items-center gap-2"><span class="dot" style="background:'+COL[x.b]+'"></span><span class="flex-1">'+x.n+'</span><button class="del text-red-300" data-i="'+i+'">✕</button><span class="w-full text-[10px] text-slate-400">↔ '+x.sw+'</span></li>';}).join('');
+ var v=J('shifa_vit',[]);var g=v.slice(0,7).reverse();
+ document.getElementById('chart').innerHTML=g.map(function(x){var h=Math.max(6,Math.min(80,(x.g||0)/4));return '<span class="hbar" style="height:'+h+'px"></span>';}).join('')||'<span class="text-[10px] text-slate-500">no glucose logs yet</span>';
+ document.getElementById('vitLast').textContent=v.length?('last: G '+v[0].g+' · BP '+v[0].s+'/'+v[0].d+' · '+v[0].w+'kg · '+new Date(v[0].t).toLocaleDateString()):'';
+ var m=J('shifa_meds',[]);var dk=new Date().toDateString();
+ document.getElementById('medList').innerHTML=m.map(function(x,i){return '<li class="flex items-center gap-2"><span class="dot" style="background:'+(x.done===dk?'#34d399':'#fbbf24')+'"></span><span class="flex-1">'+x.n+' · '+x.t+'</span><button class="mdone text-mint" data-i="'+i+'">✓</button><button class="del text-red-300" data-i="'+i+'">✕</button></li>';}).join('');}
+document.getElementById('vitBtn').addEventListener('click',function(){var g=parseFloat(document.getElementById('vG').value)||0,s=parseFloat(document.getElementById('vS').value)||0,d=parseFloat(document.getElementById('vD').value)||0,w=parseFloat(document.getElementById('vW').value)||0;
+ if(!g&&!s&&!w)return;var v=J('shifa_vit',[]);v.unshift({g:g,s:s,d:d,w:w,t:Date.now()});S('shifa_vit',v.slice(0,60));render();});
+document.getElementById('medBtn').addEventListener('click',function(){var n=document.getElementById('mN').value.trim(),t=document.getElementById('mT').value;if(!n)return;var m=J('shifa_meds',[]);m.unshift({n:n,t:t,done:''});S('shifa_meds',m);document.getElementById('mN').value='';render();});
+document.getElementById('medList').addEventListener('click',function(e){var m=J('shifa_meds',[]);
+ if(e.target.closest('.mdone')){m[Number(e.target.closest('.mdone').dataset.i)].done=new Date().toDateString();S('shifa_meds',m);render();return;}
+ if(e.target.closest('.del')){m.splice(Number(e.target.closest('.del').dataset.i),1);S('shifa_meds',m);render();}});
+document.getElementById('permBtn').addEventListener('click',function(){if(!('Notification' in window)){alert('Notifications not supported here');return;}Notification.requestPermission().then(function(p){alert(p==='granted'?'✅ Notifications on':'Notifications blocked by browser');});});
+setInterval(function(){if(!('Notification' in window)||Notification.permission!=='granted')return;var now=new Date();var hm=('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);var dk=now.toDateString();
+ J('shifa_meds',[]).forEach(function(x,i){if(x.t===hm&&x.done!==dk&&x.notified!==dk){var m=J('shifa_meds',[]);m[i].notified=dk;S('shifa_meds',m);try{new Notification('SHIFA 💊',{body:x.n+' — '+x.t});}catch(e){}}});},30000);
+document.getElementById('scrBtn').addEventListener('click',function(){var s=Number(document.getElementById('sAge').value)+Number(document.getElementById('sFam').value)+Number(document.getElementById('sAct').value)+Number(document.getElementById('sWai').value);
+ var band=s>=7?'HIGH':s>=4?'MODERATE':'LOW';var col=band==='HIGH'?'#f87171':band==='MODERATE'?'#fbbf24':'#34d399';
+ var msg=band==='LOW'?'Low band. Keep the green-plate habit and re-screen yearly.':band==='MODERATE'?'Moderate band: book a fasting glucose or HbA1c this month — early catch is cheap catch. Start the traffic-light plate today.':'High band: this screener is not a diagnosis, but it is a nudge. Book an HbA1c within 2 weeks and bring this screen to the clinician.';
+ document.getElementById('scrOut').innerHTML='<b style="color:'+col+'">'+band+' ('+s+'/12)</b> — '+msg;});
+document.getElementById('aBtn').addEventListener('click',function(){var q=document.getElementById('aQ').value.trim();if(!q)return;var o=document.getElementById('aOut');
+ if(RED.test(q)){o.textContent='🚨 These symptoms need a human now: call your local emergency number or go to the nearest ER. Do not wait for an app — including me.';return;}
+ o.textContent='…';
+ if(GEMINI_KEY){var SYS='You are SHIFA, an educational health companion for South/Southeast Asia and the GCC. Never diagnose, never give drug doses, never override a physician. Answer in the user language (EN/UR/AR). ≤80 words, practical, culturally aware of local dishes. Red flags → emergency advice first.';
+  fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:SYS+'\nUser: '+q}]}]})}).then(function(r){return r.json();}).then(function(j){o.textContent=(j.candidates&&j.candidates[0]&&j.candidates[0].content.parts[0].text)||localKB(q);}).catch(function(){o.textContent=localKB(q);});}
+ else{o.textContent=localKB(q);}});
+function localKB(q){q=q.toLowerCase();for(var i=0;i<KB.length;i++){if(KB[i][0].test(q))return KB[i][1];}
+ return 'I can help with food bands, local swaps, reminders, screening and vitals logging. For diagnosis, doses or prescriptions, message your clinician — and in emergencies call your local emergency number.';}
+document.getElementById('refC').addEventListener('click',function(){window.open('https://www.google.com/maps/search/diabetes+clinic+near+me','_blank');});
+document.getElementById('refP').addEventListener('click',function(){window.open('https://www.google.com/maps/search/pharmacy+near+me','_blank');});
+document.getElementById('micBtn').addEventListener('click',function(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('Voice input not supported in this browser');return;}
+ var r=new SR();r.lang={en:'en-US',ur:'ur-PK',ar:'ar-SA'}[lang];r.onresult=function(e){var t=e.results[0][0].transcript;document.getElementById('q').value=t;renderList(t);};r.start();});
+document.getElementById('speakBtn').addEventListener('click',function(){if(!('speechSynthesis' in window))return;var u=new SpeechSynthesisUtterance(document.getElementById('insight').textContent);u.lang={en:'en-US',ur:'ur-PK',ar:'ar-SA'}[lang];speechSynthesis.speak(u);});
+document.getElementById('waBtn').addEventListener('click',function(){var a=J('shifa_log',[]);var pts=a.reduce(function(s,x){return s+PTS[x.b];},0);var v=J('shifa_vit',[]);var m=J('shifa_meds',[]);var dk=new Date().toDateString();var done=m.filter(function(x){return x.done===dk;}).length;
+ var t='SHIFA '+new Date().toISOString().slice(0,10)+'\n'+a.map(function(x){return '• '+x.n+' ('+PTS[x.b]+'pt) → '+x.sw;}).join('\n')+'\nPoints: '+pts+'/6'+(v.length?'\nLast glucose: '+v[0].g+' mg/dL':'')+(m.length?'\nMeds taken: '+done+'/'+m.length:'')+'\n\nEducational tool — not medical advice. © SHIFA 2026';
+ window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');});
+applyLang();
+</script></body></html>
